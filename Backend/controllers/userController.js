@@ -2,6 +2,7 @@ import { User } from "../models/userModels.js";
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
 import { verifyMail } from "../emailVerify/verifyMail.js";
+import { Session } from "../models/sessionModel.js";
 
 export const registerUser = async (req,res) =>{
 
@@ -53,3 +54,142 @@ export const registerUser = async (req,res) =>{
     }
 
 }
+
+ export const verification = async(req,res) =>{
+    try{
+        const authHeader = req.headers.authorization;
+        if (!authHeader || !authHeader.startsWith("Bearer ")) {
+        return res.status(401).json({
+            success: false,
+            message : "authorization token is missing or invalid"
+        })
+       }
+
+       const token = authHeader.split(" ")[1];
+
+       let decoded;
+       try{
+        decoded = jwt.verify(token, process.env.SECRET_KEY)
+
+       } catch(err){
+        if(err.name === "TokenExpiredError"){
+            return  res.status(400).json({
+                success: false,
+                message: "The registration token has expired"
+            })
+        }
+        return res.status(400).json({
+            success: false,
+            message: "Token verification failed"
+        })
+
+       }
+       const user = await User.findById(decoded.id)
+
+       if(!user){
+        return res.status(404).json({
+            success: false,
+            message: "User not found"
+        })
+       }
+
+       user.token = null
+       user.isVerified = true
+       await user.save();
+
+       return res.status(200).json({
+        success: true,
+        message: "Email verified successfully"
+       })
+
+    }  catch(error){
+        return res.status(500).json({
+            success: false,
+            message: error.message
+        })
+
+    }
+ }
+
+ export const loginUser = async (req,res) => {
+    try{
+
+        const {email, password} = req.body;
+
+        if(!email || !password){
+            return res.status(400).json({
+                success: false,
+                message: "All fields are required"
+            })
+        }
+
+        const user = await User.findOne({email});
+
+        if(!user){
+            return res.status(401).json({
+                success: false,
+                message: "Email is not find"
+            })
+        }
+
+        const passwordCheck = await bcrypt.compare(password, user.password)
+        if(!passwordCheck){
+            return res.status(402).json({
+                success: false,
+                message: "password is Wrong"
+            })
+        }
+
+      if(user.isVerified!== true){
+        res.status(403).json({
+            success: false,
+            message: "Verify your account than login"
+        })
+      }
+
+      const existingSession  = await Session.findOne({userId: user._id});
+      if(existingSession){
+        await Session.deleteOne({userId: user._id})
+      }
+
+      await Session.create({userId: user._id})
+
+      const accessToken = jwt.sign({id: user._id}, process.env.SECRET_KEY, {expiresIn: "10d"})
+      const refreshToken = jwt.sign({id: user._id}, process.env.SECRET_KEY, {expiresIn: "30d"})
+
+      user.isLoggedIn = true;
+      await user.save();
+
+      return res.status(200).json({
+        success: true,
+        message: `Welcome back ${user.username}`,
+        accessToken,
+        refreshToken,
+        data: user
+      })
+
+
+    } catch(error){
+
+        return res.status(500).json({
+            success: false,
+            message: error.message,
+        })
+
+    }
+ }
+
+ export const logoutUser = async (req,res) =>{
+
+    try{
+
+        const userId = req.userId;
+
+    } catch(error){
+        return res.status(500).json({
+            success: false,
+            message: error.message
+        })
+    }
+
+ }
