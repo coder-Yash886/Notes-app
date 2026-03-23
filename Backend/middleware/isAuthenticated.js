@@ -1,5 +1,4 @@
 import jwt, { decode } from "jsonwebtoken"
-import { errorMonitor } from "nodemailer/lib/xoauth2";
 
 export const isAuthenticated = async (req,res,next) => {
     try{
