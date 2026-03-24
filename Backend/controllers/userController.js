@@ -184,6 +184,13 @@ export const registerUser = async (req,res) =>{
     try{
 
         const userId = req.userId;
+        await Session.deleteMany({userId});
+        await User.findByIdAndUpdate(userId, {isLoggedIn: false});
+
+        return res.status(200).json({
+            success: false,
+            message: "Logged out successfully"
+        })
 
     } catch(error){
         return res.status(500).json({
