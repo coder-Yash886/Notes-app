@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken"
 import { verifyMail } from "../emailVerify/verifyMail.js";
 import { Session } from "../models/sessionModel.js";
 import { sendOtpMail } from "../emailVerify/sendOtpMail.js";
+import { TiSortNumericallyOutline } from "react-icons/ti";
 
 export const registerUser = async (req,res) =>{
 
@@ -234,4 +235,67 @@ export const registerUser = async (req,res) =>{
             message: error.message
         })
     }
+ }
+
+
+ export const verifyOTP = async (req,res) =>{
+    const {otp} = req.body;
+    const email = req.params.email
+
+    if(!otp){
+        return res.status(400).json({
+            success: false,
+            message: "OTP is required"
+        })
+    }
+
+    try{
+        const user = await User.findOne({email});
+        if(!user){
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            })
+        }
+
+        if(!user.otp || !user.otpExpiry){
+            return res.status(400).json({
+                success: false,
+                message: "OTP not generated or already verified"
+            })
+        }
+
+        if(user.otpExpiry < new Date()){
+            return res.status(400).json({
+                success: false,
+                message: "OTP has expired request a new one"
+            })
+        }
+
+        if(otp !== user.otp){
+            return res.status(400).json({
+                success: false,
+                message: "Invalid OTP"
+            })
+        }
+
+        user.otp = null
+        user.otpExpiry = null
+        await user.save();
+
+        return res.status(200).json({
+            success: false,
+            message: "OTP verifield successfully"
+        })
+
+        } catch(error){
+
+            return res.status(500).json({
+                success: false,
+                message: "Internal server error"
+            })
+
+        }
+    
+        
  }
