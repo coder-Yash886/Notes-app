@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
 import { verifyMail } from "../emailVerify/verifyMail.js";
 import { Session } from "../models/sessionModel.js";
+import { sendOtpMail } from "../emailVerify/sendOtpMail.js";
 
 export const registerUser = async (req,res) =>{
 
@@ -214,7 +215,7 @@ export const registerUser = async (req,res) =>{
             })
         }
 
-        const otp = Math.floor(100000 + Math.random()*9000000).toString();
+        const otp = Math.floor(100000 + Math.random()*900000).toString();
         const expiry = new Date(Date.now() + 10*60*1000);
 
         user.otp = otp;
@@ -223,8 +224,8 @@ export const registerUser = async (req,res) =>{
 
         await sendOtpMail(email, otp);
         return res.status(200).json({
-            success: false,
-            message: error.message
+            success: true,
+            message: "Otp send successfully"
         })
 
     } catch(error){
