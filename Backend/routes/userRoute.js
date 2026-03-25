@@ -12,4 +12,4 @@ router.post("/forgot-password", forgotPassword);
 router.post('/verify-otp/:email', verifyOTP)
 router.post('/change-password/:email', changePassword)
 
-export default router
+export default router;
