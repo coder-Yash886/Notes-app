@@ -1,5 +1,5 @@
 import React from 'react'
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider } from 'react-router'
 import Home from './pages/Home'
 import Signup from './pages/Signup'
 import Login from './pages/Login'
@@ -8,23 +8,19 @@ const router = createBrowserRouter([
   {
     path: '/',
     element: <Home/>
-  }
-])
+  },
 
-const signuprouter = createBrowserRouter([
   {
     path: '/signup',
     element: <Signup/>
-  }
-])
+  },
 
-const loginrouter = createBrowserRouter([
   {
     path: '/login',
     element: <Login/>
   }
-])
 
+])
 const App = () => {
   return (
     <div>
