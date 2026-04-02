@@ -19,7 +19,7 @@ const Navbar = () => {
             <l>Pricing</l>
             <l>About</l>
             {
-                user? <></>: <Link to={'/login'}><li>loign in</li></Link>
+                user? <></>: <Link to={'/login'}><li>login</li></Link>
             }
            </ul>
       </div>
