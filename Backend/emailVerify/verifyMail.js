@@ -8,7 +8,7 @@ import handlebars from "handlebars"
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename)
 
-export const verifyMail = async(token, email) =>{
+export const verifyMail = async (token, email) => {
 
     const emailTemplateSource = fs.readFileSync(
         path.join(__dirname, "template.hbs"),
@@ -16,11 +16,14 @@ export const verifyMail = async(token, email) =>{
     )
 
     const template = handlebars.compile(emailTemplateSource)
-    const htmlToSend = template({token: encodeURIComponent})
+
+    const htmlToSend = template({
+        token: encodeURIComponent(token)   // ✅ FIXED
+    })
 
     const transporter = nodemailer.createTransport({
         service: 'gmail',
-        auth:{
+        auth: {
             user: process.env.MAIL_USER,
             pass: process.env.MAIL_PASS
         }
@@ -29,16 +32,16 @@ export const verifyMail = async(token, email) =>{
     const mailConfigurations = {
         from: process.env.MAIL_USER,
         to: email,
-        subject: "Email Varification",
+        subject: "Email Verification",
         html: htmlToSend
     }
 
-    transporter.sendMail(mailConfigurations, function(error, info){
-        if(error){
-            throw new Error(error)
+    transporter.sendMail(mailConfigurations, function (error, info) {
+        if (error) {
+            console.log(error)
+            return;
         }
-        console.log("Email send successfully");
+        console.log("Email sent successfully");
         console.log(info)
     })
-
 }

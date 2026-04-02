@@ -3,6 +3,8 @@ import { createBrowserRouter, RouterProvider } from 'react-router'
 import Home from './pages/Home'
 import Signup from './pages/Signup'
 import Login from './pages/Login'
+import VerifyEmail from './pages/VerifyEmail'
+import Verify from './pages/Verify'
 
 const router = createBrowserRouter([
   {
@@ -13,6 +15,15 @@ const router = createBrowserRouter([
   {
     path: '/signup',
     element: <Signup/>
+  },
+
+  {
+    path: '/verify',
+    element: <VerifyEmail/>
+  },
+  {
+    path: '/verify/:token',
+    element: <Verify/>
   },
 
   {
