@@ -6,11 +6,12 @@ import Login from './pages/Login'
 import VerifyEmail from './pages/VerifyEmail'
 import Verify from './pages/Verify'
 import Navbar from './components/Navbar'
+import ProtectedRoute from './components/ProtectedRoute'
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <><Navbar/><Home/></>
+    element: <div><Navbar/><Home/></div>
   },
 
   {

@@ -1,6 +1,6 @@
 import { BookA, BookOpen, LogOut, User } from "lucide-react";
 import React from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,9 +11,24 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { getData } from "@/context/userContext";
+import axios from "axios";
 
 const Navbar = () => {
-  const user = true;
+  const { user, setUser } = getData();
+  const navigate = useNavigate();
+
+  const logoutHandler = async () => {
+    try {
+      await axios.post("http://localhost:8000/api/logout", {}, {
+        withCredentials: true,
+      });
+      setUser(null);
+      navigate('/login');
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <nav className="p-2 border-b border-gray-200 bg-transparent">
@@ -40,12 +55,12 @@ const Navbar = () => {
                 <DropdownMenuContent>
                   <DropdownMenuGroup>
                     <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                    <DropdownMenuItem><User/>Profile</DropdownMenuItem>
-                    <DropdownMenuItem><BookA/>Notes</DropdownMenuItem>
+                    <DropdownMenuItem><User /> Profile</DropdownMenuItem>
+                    <DropdownMenuItem><BookA /> Notes</DropdownMenuItem>
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />
                   <DropdownMenuGroup>
-                    <DropdownMenuItem onClick={logoutHandler}><LogOut/>Logout</DropdownMenuItem>
+                    <DropdownMenuItem onClick={logoutHandler}><LogOut /> Logout</DropdownMenuItem>
                   </DropdownMenuGroup>
                 </DropdownMenuContent>
               </DropdownMenu>

@@ -10,8 +10,10 @@ import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router";
 import axios from "axios";
+import { getData } from "@/context/userContext";
 
 const Login = () => {
+  const {setUser} = getData();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -42,6 +44,7 @@ const Login = () => {
       })
       if(res.data.success){
         navigate('/')
+        setUser(res.data.user)
         toast.success(res.data.message)
       }
     } catch (error) {
